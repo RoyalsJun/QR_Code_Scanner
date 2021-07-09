@@ -1,0 +1,90 @@
+<html>
+<head>
+<title>MainActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #008000; font-weight: bold;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MainActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span>com.example.qr_code_scanner;
+
+<span class="s0">import </span>androidx.appcompat.app.AlertDialog;
+<span class="s0">import </span>androidx.appcompat.app.AppCompatActivity;
+
+<span class="s0">import </span>android.content.DialogInterface;
+<span class="s0">import </span>android.content.Intent;
+<span class="s0">import </span>android.os.Bundle;
+<span class="s0">import </span>android.view.View;
+<span class="s0">import </span>android.widget.Button;
+<span class="s0">import </span>android.widget.Toast;
+
+<span class="s0">import </span>com.google.zxing.integration.android.IntentIntegrator;
+<span class="s0">import </span>com.google.zxing.integration.android.IntentResult;
+
+<span class="s0">public class </span>MainActivity <span class="s0">extends </span>AppCompatActivity <span class="s0">implements </span>View.OnClickListener {
+
+    Button scanBtn;
+
+    @Override
+    <span class="s0">protected void </span>onCreate(Bundle savedInstanceState) {
+        <span class="s0">super</span>.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        scanBtn = findViewById(R.id.scanBtn);
+        scanBtn.setOnClickListener(<span class="s0">this</span>);
+    }
+
+    @Override
+    <span class="s0">public void </span>onClick(View v) {
+        scanCode();
+    }
+
+    <span class="s0">private void </span>scanCode() {
+        IntentIntegrator integrator = <span class="s0">new </span>IntentIntegrator(<span class="s0">this</span>);
+        integrator.setCaptureActivity(CaptureActivity.<span class="s0">class</span>);
+        integrator.setOrientationLocked(<span class="s0">false</span>);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+        integrator.setPrompt(<span class="s2">&quot;Scanning Code&quot;</span>);
+        integrator.initiateScan();
+    }
+
+    @Override
+    <span class="s0">protected void </span>onActivityResult(<span class="s0">int </span>requestCode, <span class="s0">int </span>resultCode, Intent data){
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        <span class="s0">if </span>(result != <span class="s0">null</span>){
+            <span class="s0">if </span>(result.getContents() != <span class="s0">null</span>){
+                AlertDialog.Builder builder = <span class="s0">new </span>AlertDialog.Builder(<span class="s0">this</span>);
+                builder.setMessage(result.getContents());
+                builder.setTitle(<span class="s2">&quot;Scanning Result&quot;</span>);
+                builder.setPositiveButton(<span class="s2">&quot;Scan Again&quot;</span>, <span class="s0">new </span>DialogInterface.OnClickListener() {
+                    @Override
+                    <span class="s0">public void </span>onClick(DialogInterface dialog, <span class="s0">int </span>which) {
+                        scanCode();
+                    }
+                }).setNegativeButton(<span class="s2">&quot;Finish&quot;</span>, <span class="s0">new </span>DialogInterface.OnClickListener() {
+                    @Override
+                    <span class="s0">public void </span>onClick(DialogInterface dialog, <span class="s0">int </span>which) {
+                        finish();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+            <span class="s0">else </span>{
+                Toast.makeText(<span class="s0">this</span>,<span class="s2">&quot;No Results&quot;</span>, Toast.LENGTH_LONG).show();
+            }
+        } <span class="s0">else </span>{
+            <span class="s0">super</span>.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+}</pre>
+</body>
+</html>
